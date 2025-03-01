@@ -32,29 +32,72 @@ export class UserServiceImpl implements UserService {
   }
 
   async addFollowingByUserId(userId: string, userFollowingId: string): Promise<void> {
-    const user = await UserModel.findById(userId);
-    if (!user) {
-      throw new Error('User not found');
-    }
-
-    const userFollowing = await UserModel.findById(userFollowingId);
-    if (!userFollowing) {
-      throw new Error('User Following not found');
-    }
-
-    await UserModel.updateOne(
-      { _id: userFollowingId },
-      {
-        $addToSet: { followers: { _id: user._id } },
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    try {
+      const user = await UserModel.findById(userId).session(session);
+      if (!user) {
+        throw new Error('User not found');
       }
-    );
 
-    await UserModel.updateOne(
-      { _id: userId },
-      {
-        $addToSet: { followings: { _id: userFollowing._id } },
+      const userFollowing = await UserModel.findById(userFollowingId).session(session);
+      if (!userFollowing) {
+        throw new Error('User Following not found');
       }
-    );
-    return
+
+      await UserModel.updateOne(
+        { _id: userFollowingId },
+        { $addToSet: { followers: { _id: user._id } } },
+        { session }
+      );
+
+      await UserModel.updateOne(
+        { _id: userId },
+        { $addToSet: { followings: { _id: userFollowing._id } } },
+        { session }
+      );
+
+      await session.commitTransaction();
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
+  }
+
+  async unfollowByUserId(userId: string, userFollowingId: string): Promise<void> {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    try {
+      const user = await UserModel.findById(userId).session(session);
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      const userFollowing = await UserModel.findById(userFollowingId).session(session);
+      if (!userFollowing) {
+        throw new Error('User Following not found');
+      }
+
+      await UserModel.updateOne(
+        { _id: userId },
+        { $pull: { followings: userFollowing._id } },
+        { session }
+      );
+
+      await UserModel.updateOne(
+        { _id: userFollowingId },
+        { $pull: { followers: user._id } },
+        { session }
+      );
+
+      await session.commitTransaction();
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
   }
 }

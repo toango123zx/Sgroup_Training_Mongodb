@@ -7,6 +7,7 @@ const setupUserRoute = (controller: UserController) => {
 
     router.get('/:id', controller.getOne.bind(controller));
     router.post('/:id/follow', requireAuthorizedUser, controller.addFollowingByUserId.bind(controller));
+    router.delete('/:id/unfollow', requireAuthorizedUser, controller.removeFollowingByUserId.bind(controller));
 
     return router;
 }

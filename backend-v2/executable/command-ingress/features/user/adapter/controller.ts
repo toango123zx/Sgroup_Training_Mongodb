@@ -29,4 +29,14 @@ export class UserController extends BaseController {
       return;
     });
   }
+
+  async removeFollowingByUserId(req: HttpRequest, res: Response, next: NextFunction): Promise<void> {
+    await this.execWithTryCatchBlock(req, res, next, async (req, res, _next) => {
+      const { id } = req.params;
+      const userFollowingId = req.getSubject();
+      await this.service.unfollowByUserId(id, userFollowingId);
+      res.status(200).json({ message: 'Following removed' });
+      return;
+    });
+  }
 }
