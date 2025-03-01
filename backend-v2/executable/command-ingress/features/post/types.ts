@@ -8,12 +8,12 @@ type PostCreationDto = {
   tags: string[];
 }
 
-type UpdatePostDto = {
-  markdown: string;
-  title: string;
-  image: string;
-  tags: string[];
-};
+type PutUpdateDto = {
+  markdown?: string;
+  title?: string;
+  image?: string;
+  tags?: string[];
+}
 
 type PostEntity = {
   id: string;
@@ -31,12 +31,12 @@ interface PostService {
   createPost(postCreationDto: PostCreationDto): Promise<PostEntity>;
   fetchPostsByUser(id: string): Promise<PostEntity[]>;
   getPost(id: string): Promise<PostEntity>
-  editPost(id: string, editPostDto: UpdatePostDto): Promise<PostEntity>;
+  updatePost(id: string, putUpdateDto: PutUpdateDto): Promise<PostEntity>;
 }
 
 export {
   PostService,
   PostCreationDto,
-  UpdatePostDto,
   PostEntity,
-};
+  PutUpdateDto
+}
