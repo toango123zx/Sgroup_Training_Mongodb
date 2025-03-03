@@ -20,11 +20,21 @@ export class UserController extends BaseController {
     });
   }
 
+  async getFollowersByUserId(req: HttpRequest, res: Response, next: NextFunction): Promise<void> {
+    await this.execWithTryCatchBlock(req, res, next, async (req, res, _next) => {
+      const userId = req.getSubject();
+      const user = await this.service.getOne(userId);
+      const followingsResponst: UserFollower[] = user.followings;
+      res.status(200).json(followingsResponst);
+      return;
+    });
+  }
+
   async addFollowingByUserId(req: HttpRequest, res: Response, next: NextFunction): Promise<void> {
     await this.execWithTryCatchBlock(req, res, next, async (req, res, _next) => {
       const { id } = req.params;
-      const userFollowingId = req.getSubject();
-      await this.service.addFollowingByUserId(id, userFollowingId);
+      const userId = req.getSubject();
+      await this.service.addFollowingByUserId(userId, id);
       res.status(200).json({ message: 'Following added' });
       return;
     });
@@ -33,8 +43,8 @@ export class UserController extends BaseController {
   async removeFollowingByUserId(req: HttpRequest, res: Response, next: NextFunction): Promise<void> {
     await this.execWithTryCatchBlock(req, res, next, async (req, res, _next) => {
       const { id } = req.params;
-      const userFollowingId = req.getSubject();
-      await this.service.unfollowByUserId(id, userFollowingId);
+      const userId = req.getSubject();
+      await this.service.unfollowByUserId(userId, id);
       res.status(200).json({ message: 'Following removed' });
       return;
     });
