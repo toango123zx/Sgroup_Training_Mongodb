@@ -1,6 +1,6 @@
 import { BaseController } from '../../../shared/base-controller';
 import { HttpRequest } from '../../../types';
-import { UserFollower, UserService } from '../types';
+import { UserFollower, UserFollowing, UserService } from '../types';
 import { Response, NextFunction } from 'express';
 
 export class UserController extends BaseController {
@@ -24,11 +24,22 @@ export class UserController extends BaseController {
     await this.execWithTryCatchBlock(req, res, next, async (req, res, _next) => {
       const userId = req.getSubject();
       const user = await this.service.getOne(userId);
-      const followingsResponst: UserFollower[] = user.followings;
+      const followingsResponst: UserFollower[] = user.followers;
       res.status(200).json(followingsResponst);
       return;
     });
   }
+
+  async getFollowingsByUserId(req: HttpRequest, res: Response, next: NextFunction): Promise<void> {
+    await this.execWithTryCatchBlock(req, res, next, async (req, res, _next) => {
+      const userId = req.getSubject();
+      const user = await this.service.getOne(userId);
+      const followingsResponst: UserFollowing[] = user.followings;
+      res.status(200).json(followingsResponst);
+      return;
+    });
+  }
+
 
   async addFollowingByUserId(req: HttpRequest, res: Response, next: NextFunction): Promise<void> {
     await this.execWithTryCatchBlock(req, res, next, async (req, res, _next) => {

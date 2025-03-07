@@ -61,18 +61,20 @@ export class PostController extends BaseController {
     });
   }
 
-  async editPost(req: HttpRequest, res: Response, next: NextFunction): Promise<void> {
+  async updatePost(req: HttpRequest, res: Response, next: NextFunction): Promise<void> {
     await this.execWithTryCatchBlock(req, res, next, async (req, res, _next) => {
-      const id = req.params.id;
-      const updatePostBody = new UpdatePostDto(req.body);
-      const validateResult = await updatePostBody.validate();
+      const putUpdateDto = new CreatePostBody(req.body);
+      const validateResult = await putUpdateDto.validate();
       if (!validateResult.ok) {
         responseValidationError(res, validateResult.errors[0]);
         return;
       }
 
-      const post = await this.service.editPost(id, {
-        ...updatePostBody,
+      const post = await this.service.updatePost(req.params.id, {
+        title: putUpdateDto.title,
+        markdown: putUpdateDto.markdown,
+        image: putUpdateDto.image,
+        tags: putUpdateDto.tags,
       });
 
       res.status(200).json(post);

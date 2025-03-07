@@ -7,14 +7,12 @@ const requireAuthorizedUser = (req: HttpRequest, res: Response, next: NextFuncti
   try {
     const bearerToken = req.headers['authorization'];
     const jwtToken = bearerToken?.split(' ')[1];
-
     if (!jwtToken) {
       res.sendStatus(401);
       return;
     }
 
     const payload = jwt.verify(jwtToken, env.JWT_SECRET);
-
     if (!payload.sub) {
       res.sendStatus(401);
       return;
