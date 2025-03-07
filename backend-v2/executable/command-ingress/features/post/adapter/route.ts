@@ -16,6 +16,8 @@ const setupPostRoute = (
 
   router.route('/:id')
     .get(controller.getPost.bind(controller));
+  router.route('/:id' )
+    .put(controller.updatePost.bind(controller));
 
   return router;
 }

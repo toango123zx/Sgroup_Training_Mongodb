@@ -1,6 +1,5 @@
 import { UserEntity, UserService } from '../types';
 import UserModel from '../../../../../internal/model/user';
-import user from '../../../../../internal/model/user';
 import mongoose from 'mongoose';
 
 export class UserServiceImpl implements UserService {
@@ -34,6 +33,7 @@ export class UserServiceImpl implements UserService {
   async addFollowingByUserId(userId: string, userFollowingId: string): Promise<void> {
     const session = await mongoose.startSession();
     session.startTransaction();
+
     try {
       const user = await UserModel.findById(userId).session(session);
       if (!user) {
@@ -65,6 +65,7 @@ export class UserServiceImpl implements UserService {
       session.endSession();
     }
   }
+
 
   async unfollowByUserId(userId: string, userFollowingId: string): Promise<void> {
     const session = await mongoose.startSession();

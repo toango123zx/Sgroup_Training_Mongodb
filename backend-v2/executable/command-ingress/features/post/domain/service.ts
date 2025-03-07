@@ -97,8 +97,6 @@ export class PostServiceImpl implements PostService {
         }
       });
 
-    console.log(`🚀 ~ PostServiceImpl ~ updatePost ~ a:`, a)
-
     const updatedPost = await Post.findOne({ _id: id });
 
     if (!updatedPost) {

@@ -6,6 +6,7 @@ export class BaseController {
     try {
       await handler(req, res, next);
     } catch (error) {
+      console.log(`🚀 ~ base-controller.ts:9 ~ BaseController ~ execWithTryCatchBlock ~ error:`, error)
       next(error);
     }
   }
