@@ -1,3 +1,4 @@
+import { RedisClientType } from 'redis';
 import Post from '../../../../../internal/model/post';
 import User from '../../../../../internal/model/user';
 import { UserFollowing } from '../../user/types';
@@ -35,6 +36,26 @@ export class PostServiceImpl implements PostService {
         })),
       },
     };
+  }
+
+  async getNewFeed(id: string, redisClient: RedisClientType): Promise<PostEntity[]> {
+    console.log(`🚀 ~ service.ts:42 ~ PostServiceImpl ~ getNewFeed ~ id:`, id);
+
+    const redisData = await redisClient.get('newfeed');
+    console.log(`🚀 ~ service.ts:43 ~ PostServiceImpl ~ getNewFeed ~ redisData:`, redisData)
+    const postId = JSON.parse(redisData)[id];
+    console.log(`🚀 ~ service.ts:47 ~ PostServiceImpl ~ getNewFeed ~ postId:`, postId)
+    const posts = await Post.find({ _id: { $in: postId } });
+    return posts.map((post) => ({
+      id: String(post._id),
+      title: post.title,
+      image: post.image,
+      authorID: String(post.author),
+      markdown: post.markdown,
+      tags: post.tags,
+      summary: post.summary,
+      createdAt: Number(post.createdAt),
+    }));
   }
 
   async fetchPostsByUser(id: string): Promise<PostEntity[]> {

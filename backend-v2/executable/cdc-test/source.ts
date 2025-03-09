@@ -1,7 +1,8 @@
 import EventEmitter from 'events';
+import { RedisClientType } from 'redis';
 
 interface Source {
-  get: () => Promise<EventEmitter>;
+  get: (redisClient: RedisClientType) => Promise<EventEmitter>;
 }
 
 export {

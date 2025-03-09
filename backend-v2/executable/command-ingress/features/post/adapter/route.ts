@@ -10,13 +10,14 @@ const setupPostRoute = (
 
   router.route('/')
     .post(requireAuthorizedUser, controller.createPost.bind(controller));
-
+  router.route('/newfeed')
+    .get(requireAuthorizedUser, controller.getNewFeed.bind(controller));
   router.route('/users/:id')
     .get(controller.fetchPostByUser.bind(controller));
 
   router.route('/:id')
     .get(controller.getPost.bind(controller));
-  router.route('/:id' )
+  router.route('/:id')
     .put(controller.updatePost.bind(controller));
 
   return router;

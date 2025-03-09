@@ -17,14 +17,12 @@ export class UserServiceImpl implements UserService {
       email: String(user.email),
       followings: user.followings.map((following: any) => {
         return {
-          id: String(following.id),
-          name: String(following.name),
+          id: String(following._id),
         }
       }),
       followers: user.followers.map((follower: any) => {
         return {
-          id: String(follower.id),
-          name: String(follower.name),
+          id: String(follower._id),
         }
       }),
     };

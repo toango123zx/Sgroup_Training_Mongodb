@@ -1,3 +1,4 @@
+import { RedisClientType } from 'redis';
 import { UserEntity } from '../user/types';
 
 type PostCreationDto = {
@@ -28,6 +29,7 @@ type PostEntity = {
 }
 
 interface PostService {
+  getNewFeed(sub: string, redisClient: RedisClientType): Promise<PostEntity[]>;
   createPost(postCreationDto: PostCreationDto): Promise<PostEntity>;
   fetchPostsByUser(id: string): Promise<PostEntity[]>;
   getPost(id: string): Promise<PostEntity>

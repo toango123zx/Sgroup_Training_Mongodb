@@ -19,10 +19,11 @@ import initPostRoute from './features/post/adapter/route';
 import initUserRoute from './features/user/adapter/route';
 import { UserController } from './features/user/adapter/controller';
 import { UserServiceImpl } from './features/user/domain/service';
+import { RedisClientType } from 'redis';
 
 const app = express();
 
-const createHttpServer = (redisClient: any) => {
+const createHttpServer = (redisClient: RedisClientType | any) => {
   const server = createServer(app);
 
   const isProd = !env.DEV;
@@ -52,7 +53,7 @@ const createHttpServer = (redisClient: any) => {
 
   // Setup route
   app.use('/auth', initAuthRoute(new AuthController(authService)));
-  app.use('/post', initPostRoute(new PostController(postService)));
+  app.use('/post', initPostRoute(new PostController(postService, redisClient)));
   app.use('/users', initUserRoute(new UserController(userService)));
 
   app.use(recoverMiddleware);

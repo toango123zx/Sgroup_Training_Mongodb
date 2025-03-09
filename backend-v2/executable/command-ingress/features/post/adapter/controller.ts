@@ -4,13 +4,16 @@ import { PostService } from '../types';
 import { CreatePostBody, GetPostDto, UpdatePostDto } from './dto';
 import responseValidationError from '../../../shared/response';
 import { HttpRequest } from '../../../types';
+import { RedisClientType } from 'redis';
 
 export class PostController extends BaseController {
   service: PostService;
+  redisClient: RedisClientType;
 
-  constructor(service: PostService) {
+  constructor(service: PostService, redisClient: RedisClientType) {
     super();
     this.service = service;
+    this.redisClient = redisClient;
   }
 
   async getPost(req: HttpRequest, res: Response, next: NextFunction): Promise<void> {
@@ -24,6 +27,15 @@ export class PostController extends BaseController {
 
       const post = await this.service.getPost(getPostDto.id);
       res.status(200).json({ post });
+      return;
+    });
+  }
+
+  async getNewFeed(req: HttpRequest, res: Response, next: NextFunction): Promise<void> {
+    await this.execWithTryCatchBlock(req, res, next, async (req, res, _next) => {
+      const sub = req.getSubject();
+      const newFeed = await this.service.getNewFeed(sub, this.redisClient);
+      res.status(200).json({ newFeed });
       return;
     });
   }
