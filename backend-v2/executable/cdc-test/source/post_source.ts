@@ -10,7 +10,12 @@ class PostSource implements Source {
     Post.watch()
       .on('change', async (data: any) => {
         console.log(JSON.stringify(data));
-        eventEmitter.emit('change', data.fullDocument);
+        if (data.operationType == 'insert') {
+          eventEmitter.emit('change', data.fullDocument);
+        }
+        if (data.operationType == 'delete') {
+          eventEmitter.emit('remove', data.documentKey);
+        }
       });
 
     return eventEmitter;

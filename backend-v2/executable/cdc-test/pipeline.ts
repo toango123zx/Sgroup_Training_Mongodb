@@ -44,6 +44,17 @@ class Pipeline {
       await this.sink.save(data);
     });
 
+    eventEmitter.on('remove', async (data) => {
+      for (const operator of this.operators) {
+        data = await operator.run(data);
+      }
+      const updateNewFeed = {};
+      let newfeeds = JSON.parse(await redisClient.get('newfeed'));
+      for (const key in newfeeds) {
+        updateNewFeed[key] = newfeeds[key].filter((id: string) => id !== String(data._id));
+      }
+      await redisClient.set('newfeed', JSON.stringify(updateNewFeed));
+    });
     console.log('Pipline started');
   }
 }
