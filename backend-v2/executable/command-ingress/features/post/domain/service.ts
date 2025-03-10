@@ -39,12 +39,11 @@ export class PostServiceImpl implements PostService {
   }
 
   async getNewFeed(id: string, redisClient: RedisClientType): Promise<PostEntity[]> {
-    console.log(`🚀 ~ service.ts:42 ~ PostServiceImpl ~ getNewFeed ~ id:`, id);
-
     const redisData = await redisClient.get('newfeed');
-    console.log(`🚀 ~ service.ts:43 ~ PostServiceImpl ~ getNewFeed ~ redisData:`, redisData)
     const postId = JSON.parse(redisData)[id];
-    console.log(`🚀 ~ service.ts:47 ~ PostServiceImpl ~ getNewFeed ~ postId:`, postId)
+    if (!postId) {
+      return [];
+    }
     const posts = await Post.find({ _id: { $in: postId } });
     return posts.map((post) => ({
       id: String(post._id),
